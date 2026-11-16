@@ -139,10 +139,10 @@
 }
 .ssh-thread path {
   fill: none;
-  stroke: #e8c88a;
+  stroke: #8a2748;
   stroke-width: 2;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 5px rgba(255, 214, 140, 0.9));
+  filter: drop-shadow(0 0 4px rgba(138, 39, 72, 0.45));
   opacity: 0;
 }
 

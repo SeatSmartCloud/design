@@ -57,7 +57,7 @@ const FIRST = [
   "Nadia", "Will", "Lena", "Isaac", "Tessa", "Raj", "Emma", "Hugo", "Alice", "Jonah",
 ];
 const DIETS = ["Vegetarian", "Vegan", "Gluten-free", "Dairy-free"];
-const TOKEN_COLORS = ["#6a1f3f", "#8a2748", "#d8a49c", "#efe4d3", "#3a1528", "#a85a6c", "#c9b8a3"];
+const TOKEN_COLORS = ["#6a1f3f", "#8a2748", "#d39a92", "#4a1730", "#a85a6c", "#c47e6c", "#7d2a4a"];
 
 const rand = (a = 1, b = 0) => b + Math.random() * (a - b);
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
@@ -108,17 +108,17 @@ function parquetTex() {
       const len = 256;
       const off = (r * 97) % len;
       for (let x = -off; x < 1024; x += len) {
-        const l = 21 + Math.random() * 7;
-        c.fillStyle = `hsl(${20 + Math.random() * 6}, ${34 + Math.random() * 8}%, ${l}%)`;
+        const l = 59 + Math.random() * 6;
+        c.fillStyle = `hsl(${32 + Math.random() * 5}, ${36 + Math.random() * 8}%, ${l}%)`;
         c.fillRect(x, r * rh, len, rh);
         for (let g = 0; g < 26; g++) {
-          c.fillStyle = `rgba(${Math.random() < 0.5 ? "40,20,10" : "255,220,180"},${0.03 + Math.random() * 0.05})`;
+          c.fillStyle = `rgba(${Math.random() < 0.5 ? "120,90,60" : "255,245,225"},${0.03 + Math.random() * 0.05})`;
           c.fillRect(x, r * rh + Math.random() * rh, len, 1 + Math.random() * 1.5);
         }
-        c.fillStyle = "rgba(30,14,8,0.55)";
+        c.fillStyle = "rgba(120,90,60,0.28)";
         c.fillRect(x, r * rh, 2, rh);
       }
-      c.fillStyle = "rgba(30,14,8,0.5)";
+      c.fillStyle = "rgba(120,90,60,0.25)";
       c.fillRect(0, r * rh, 1024, 2);
     }
   });
@@ -129,27 +129,12 @@ function parquetTex() {
 function wallTex() {
   const tex = canvasTex(512, 1024, (c) => {
     const g = c.createLinearGradient(0, 0, 0, 1024);
-    g.addColorStop(0, "#35122a");
-    g.addColorStop(1, "#4a1832");
+    g.addColorStop(0, "#f4eee5");
+    g.addColorStop(1, "#ebe3d6");
     c.fillStyle = g;
     c.fillRect(0, 0, 512, 1024);
-    const panel = (x: number, y: number, w: number, h: number) => {
-      c.lineWidth = 5;
-      c.strokeStyle = "rgba(20,5,14,0.6)";
-      c.strokeRect(x + 3, y + 3, w, h);
-      c.strokeStyle = "rgba(214,160,150,0.28)";
-      c.strokeRect(x, y, w, h);
-    };
-    panel(52, 60, 408, 640);
-    c.fillStyle = "rgba(20,5,14,0.25)";
-    c.fillRect(0, 770, 512, 254);
-    panel(52, 812, 408, 160);
-    c.fillStyle = "#b8935a";
-    c.fillRect(0, 760, 512, 9);
-    c.fillStyle = "rgba(255,230,180,0.5)";
-    c.fillRect(0, 760, 512, 2);
-    c.fillStyle = "#2a0d1c";
-    c.fillRect(0, 1000, 512, 24);
+    c.fillStyle = "#ddd2c2";
+    c.fillRect(0, 994, 512, 30);
   });
   tex.wrapS = THREE.RepeatWrapping;
   return tex;
@@ -236,21 +221,15 @@ function screenTex() {
 function windowTex() {
   return canvasTex(128, 256, (c) => {
     const g = c.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, "#1b2140");
-    g.addColorStop(0.7, "#3a2a55");
-    g.addColorStop(1, "#7a4a5c");
+    g.addColorStop(0, "#eaf2f6");
+    g.addColorStop(0.6, "#f7f6ef");
+    g.addColorStop(1, "#dfe8d6");
     c.fillStyle = g;
     c.fillRect(0, 0, 128, 256);
-    for (let i = 0; i < 30; i++) {
-      c.fillStyle = `rgba(255,${190 + Math.random() * 50},${130 + Math.random() * 60},${0.25 + Math.random() * 0.5})`;
-      c.beginPath();
-      c.arc(Math.random() * 128, 150 + Math.random() * 100, 1 + Math.random() * 3.5, 0, 7);
-      c.fill();
-    }
-    c.fillStyle = "#efe4d3";
-    c.fillRect(61, 0, 6, 256);
-    c.fillRect(0, 84, 128, 5);
-    c.fillRect(0, 170, 128, 5);
+    c.fillStyle = "#3b3a3a";
+    c.fillRect(62, 0, 4, 256);
+    c.fillRect(0, 84, 128, 3);
+    c.fillRect(0, 170, 128, 3);
   });
 }
 
@@ -333,8 +312,8 @@ function tokenGeo() {
 
 function centerpieceGeo() {
   const parts: THREE.BufferGeometry[] = [];
-  parts.push(tint(place(new THREE.CylinderGeometry(0.07, 0.05, 0.12, 12), 0, 0.06, 0), "#b8935a"));
-  const blooms = ["#e8c3bd", "#f2e6d8", "#8a2748", "#d99aa0", "#6a1f3f", "#f4d9c8"];
+  parts.push(tint(place(new THREE.CylinderGeometry(0.07, 0.05, 0.12, 12), 0, 0.06, 0), "#f2ede4"));
+  const blooms = ["#ffffff", "#f6efe4", "#f1d6cf", "#8fa888", "#a9bda0", "#e6b7b2", "#8a2748"];
   for (let i = 0; i < 16; i++) {
     const a = rand(Math.PI * 2);
     const up = rand(0.2, 1);
@@ -349,7 +328,7 @@ function centerpieceGeo() {
   for (let i = 0; i < 7; i++) {
     const a = (i / 7) * Math.PI * 2;
     parts.push(
-      tint(place(new THREE.SphereGeometry(0.07, 6, 5), Math.cos(a) * 0.17, 0.13, Math.sin(a) * 0.17, 0, 0, 0, 1.2, 0.6, 1.2), "#4d6a4a"),
+      tint(place(new THREE.SphereGeometry(0.07, 6, 5), Math.cos(a) * 0.17, 0.13, Math.sin(a) * 0.17, 0, 0, 0, 1.2, 0.6, 1.2), "#6f8a68"),
     );
   }
   for (let i = 0; i < 3; i++) {
@@ -391,7 +370,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const small = stage.clientWidth < 700;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.98;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(0x000000, 0);
@@ -401,15 +380,15 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = envRT.texture;
-  scene.environmentIntensity = 0.3;
+  scene.environmentIntensity = 0.55;
   pmrem.dispose();
 
   const camera = new THREE.PerspectiveCamera(24, 1, 1, 200);
   const target = new THREE.Vector3(0, 0.9, 0.2);
 
   /* ----- lights ----- */
-  scene.add(new THREE.HemisphereLight(0xffe2c8, 0x3a1a28, 0.32));
-  const key = new THREE.DirectionalLight(0xffdcb4, 3.1);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xd9cdbd, 0.95));
+  const key = new THREE.DirectionalLight(0xfff3e2, 2.3);
   key.position.set(7, 17, 10);
   key.castShadow = true;
   key.shadow.mapSize.setScalar(small ? 1024 : 2048);
@@ -424,23 +403,22 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   key.shadow.normalBias = 0.03;
   key.shadow.radius = 5;
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xc9b3ff, 0.45);
+  const fill = new THREE.DirectionalLight(0xfff6ea, 0.9);
   fill.position.set(-10, 8, 6);
   scene.add(fill);
-  const spot = new THREE.SpotLight(0xffe0b8, 260, 16, 0.42, 0.7, 1.6);
-  spot.position.set(1.5, 7, -1);
-  spot.target.position.set(-2.4, 1, -6.4);
-  scene.add(spot, spot.target);
-
   /* ----- materials ----- */
   const M = {
-    floor: track(new THREE.MeshStandardMaterial({ map: track(parquetTex()), roughness: 0.3, metalness: 0 })),
-    plum: track(new THREE.MeshStandardMaterial({ color: "#3a1528", roughness: 0.75 })),
-    cap: track(new THREE.MeshStandardMaterial({ color: "#efe6d8", roughness: 0.8 })),
+    floor: track(new THREE.MeshStandardMaterial({ map: track(parquetTex()), roughness: 0.55, metalness: 0 })),
+    plum: track(new THREE.MeshStandardMaterial({ color: "#5a1b38", roughness: 0.7 })),
+    stone: track(new THREE.MeshStandardMaterial({ color: "#e4dbcd", roughness: 0.85 })),
+    dark: track(new THREE.MeshStandardMaterial({ color: "#3b3a3a", roughness: 0.6 })),
+    wood: track(new THREE.MeshStandardMaterial({ color: "#b98d62", roughness: 0.6 })),
+    blush: track(new THREE.MeshStandardMaterial({ color: "#dcc6b6", roughness: 0.6 })),
+    cap: track(new THREE.MeshStandardMaterial({ color: "#f3ede3", roughness: 0.85 })),
     gold: track(new THREE.MeshStandardMaterial({ color: "#c8a468", roughness: 0.32, metalness: 0.85 })),
     linen: track(
       new THREE.MeshPhysicalMaterial({
-        color: "#e9dfcf",
+        color: "#f3eee6",
         roughness: 0.92,
         sheen: 1,
         sheenRoughness: 0.6,
@@ -449,7 +427,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
         bumpScale: 0.6,
       }),
     ),
-    cushion: track(new THREE.MeshStandardMaterial({ color: "#efe4d3", roughness: 0.9 })),
+    cushion: track(new THREE.MeshStandardMaterial({ color: "#f2ece2", roughness: 0.9 })),
     china: track(new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.18 })),
     napkin: track(new THREE.MeshStandardMaterial({ color: "#7a1f3d", roughness: 0.9 })),
     glass: track(
@@ -465,16 +443,10 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     ),
     flowers: track(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7 })),
     velvet: track(
-      new THREE.MeshPhysicalMaterial({
-        color: "#3a0d1f",
-        roughness: 0.9,
-        sheen: 0.6,
-        sheenRoughness: 0.5,
-        sheenColor: new THREE.Color("#7a2f48"),
-        side: THREE.DoubleSide,
-      }),
+      new THREE.MeshStandardMaterial({ color: "#f5f0e7", roughness: 0.95, transparent: true, opacity: 0.88, side: THREE.DoubleSide }),
     ),
-    walnut: track(new THREE.MeshStandardMaterial({ color: "#3a2218", roughness: 0.45 })),
+    slats: track(new THREE.MeshStandardMaterial({ color: "#c9a57c", roughness: 0.65, side: THREE.DoubleSide })),
+    walnut: track(new THREE.MeshStandardMaterial({ color: "#c7a27a", roughness: 0.55 })),
     token: track(new THREE.MeshPhysicalMaterial({ color: "#ffffff", roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.2 })),
     flame: track(new THREE.MeshBasicMaterial({ color: "#ffe0a8", toneMapped: false })),
   };
@@ -511,13 +483,13 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   /* ----- room shell ----- */
   const glow = track(glowTex());
   const upTex = track(uplightTex());
-  add(new THREE.BoxGeometry(W + 0.6, 0.5, D + 0.6), M.plum, -0.15, -0.25, -0.15, true);
-  add(new THREE.BoxGeometry(W + 0.66, 0.05, D + 0.66), M.gold, -0.15, -0.09, -0.15);
+  add(new THREE.BoxGeometry(W + 0.6, 0.5, D + 0.6), M.stone, -0.15, -0.25, -0.15, true);
+  add(new THREE.BoxGeometry(W + 0.63, 0.035, D + 0.63), M.plum, -0.15, -0.09, -0.15);
   const floor = add(new THREE.PlaneGeometry(W, D), M.floor, 0, 0.002, 0);
   floor.rotation.x = -Math.PI / 2;
 
-  add(new THREE.BoxGeometry(W + 0.3, H, 0.3), M.plum, -0.15, H / 2, -D / 2 - 0.15);
-  add(new THREE.BoxGeometry(0.3, H, D), M.plum, -W / 2 - 0.15, H / 2, 0);
+  add(new THREE.BoxGeometry(W + 0.3, H, 0.3), M.stone, -0.15, H / 2, -D / 2 - 0.15);
+  add(new THREE.BoxGeometry(0.3, H, D), M.stone, -W / 2 - 0.15, H / 2, 0);
   add(new THREE.BoxGeometry(W + 0.34, 0.07, 0.34), M.cap, -0.15, H + 0.035, -D / 2 - 0.15);
   add(new THREE.BoxGeometry(0.34, 0.07, D + 0.02), M.cap, -W / 2 - 0.15, H + 0.035, 0);
 
@@ -530,48 +502,43 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   leftWall.rotation.y = Math.PI / 2;
 
   // soft shadow on the page under the plinth
-  const contactMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x2b0f1c, transparent: true, opacity: 0.5, depthWrite: false }));
+  const contactMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x4a3a30, transparent: true, opacity: 0.4, depthWrite: false }));
   const contact = add(new THREE.PlaneGeometry(W * 1.75, D * 1.85), contactMat, 0.4, -0.5, 0.6, false, false);
   contact.rotation.x = -Math.PI / 2;
   contact.renderOrder = -1;
 
-  // uplighting on the walls
-  const uplight = (x: number, z: number, onLeft: boolean, color: string) => {
-    const mat = track(
-      new THREE.MeshBasicMaterial({ map: upTex, color, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }),
-    );
-    const m = add(new THREE.PlaneGeometry(2.2, 3.9), mat, x, 1.97, z, false, false);
-    if (onLeft) m.rotation.y = Math.PI / 2;
+  // daylight falling across the floor from each window
+  const sunMat = track(new THREE.MeshBasicMaterial({ map: upTex, color: "#fff6e4", transparent: true, opacity: 0.5, depthWrite: false }));
+  const sunPatch = (z: number) => {
+    const m = add(new THREE.PlaneGeometry(2.2, 6.5), sunMat, -W / 2 + 3.25, 0.008, z + 0.7, false, false);
+    m.rotation.set(-Math.PI / 2, 0, Math.PI / 2 + 0.2);
   };
-  [-9, -6.7, 6.7, 9].forEach((x, i) => uplight(x, -D / 2 + 0.02, false, i % 2 ? "#ff9d5c" : "#e0508a"));
-  [-6.9, -2.2, 2.6, 7.1].forEach((z, i) => uplight(-W / 2 + 0.02, z, true, i % 2 ? "#e0508a" : "#ff9d5c"));
 
   // windows and drapes on the left wall
   const winMat = track(new THREE.MeshBasicMaterial({ map: track(windowTex()) }));
-  const drape = track(curtainGeo(0.62, 3.3, 3));
-  for (const z of [-4.6, 0.2, 5]) {
-    const frame = add(new THREE.BoxGeometry(0.08, 3.1, 1.76), M.cap, -W / 2 + 0.04, 2.15, z);
+  const drape = track(curtainGeo(0.6, 3.7, 3));
+  for (const z of [-4.9, 0, 4.9]) {
+    const frame = add(new THREE.BoxGeometry(0.08, 3.36, 2.46), M.dark, -W / 2 + 0.04, 2.1, z);
     frame.receiveShadow = false;
-    const pane = add(new THREE.PlaneGeometry(1.6, 2.94), winMat, -W / 2 + 0.085, 2.15, z, false, false);
+    const pane = add(new THREE.PlaneGeometry(2.36, 3.26), winMat, -W / 2 + 0.085, 2.1, z, false, false);
     pane.rotation.y = Math.PI / 2;
     for (const s of [-1, 1]) {
       const d = new THREE.Mesh(drape, M.velvet);
-      d.position.set(-W / 2 + 0.16, 2.1, z + s * 1.05);
+      d.position.set(-W / 2 + 0.16, 2.02, z + s * 1.5);
       d.rotation.y = Math.PI / 2;
       world.add(d);
     }
-    add(new THREE.CylinderGeometry(0.025, 0.025, 3, 8), M.gold, -W / 2 + 0.16, 3.78, z).rotation.x = Math.PI / 2;
+    sunPatch(z);
   }
 
   // stage
   add(new THREE.BoxGeometry(9, 0.4, 2.6), M.walnut, 0, 0.2, -6.7, true);
-  add(new THREE.BoxGeometry(9.02, 0.05, 0.03), M.gold, 0, 0.375, -5.39);
-  add(new THREE.BoxGeometry(1.8, 0.2, 0.45), M.walnut, 0, 0.1, -5.2, true);
-  add(new THREE.BoxGeometry(0.55, 1.05, 0.42), M.plum, -2.4, 0.925, -6.3, true);
-  add(new THREE.BoxGeometry(0.62, 0.04, 0.5), M.gold, -2.4, 1.47, -6.3, true);
-  const backdrop = add(curtainGeo(10.6, 3.95, 22), M.velvet, 0, 2.05, -D / 2 + 0.12);
+    add(new THREE.BoxGeometry(1.8, 0.2, 0.45), M.walnut, 0, 0.1, -5.2, true);
+  add(new THREE.BoxGeometry(0.55, 1.05, 0.42), M.cap, -2.4, 0.925, -6.3, true);
+  add(new THREE.BoxGeometry(0.62, 0.04, 0.5), M.plum, -2.4, 1.47, -6.3, true);
+  const backdrop = add(curtainGeo(9, 3.8, 40), M.slats, 0, 2.3, -D / 2 + 0.1);
   backdrop.castShadow = false;
-  add(new THREE.BoxGeometry(4.56, 2.42, 0.06), M.gold, 0, 2.4, -D / 2 + 0.26);
+  add(new THREE.BoxGeometry(4.48, 2.38, 0.06), M.dark, 0, 2.4, -D / 2 + 0.26);
   add(new THREE.PlaneGeometry(4.4, 2.3), track(new THREE.MeshBasicMaterial({ map: track(screenTex()), toneMapped: false })), 0, 2.4, -D / 2 + 0.3, false, false);
 
   /* ----- tables, chairs and place settings ----- */
@@ -635,12 +602,12 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   }
 
   inst(clothGeo(), M.linen, mTable);
-  inst(chairGeo(), M.gold, mChair);
+  inst(chairGeo(), M.wood, mChair);
   inst(place(new THREE.BoxGeometry(0.38, 0.05, 0.38), 0, 0.492, 0), M.cushion, mChair);
-  inst(place(new THREE.CylinderGeometry(0.165, 0.15, 0.008, 28), 0, -0.006, 0), M.gold, mPlate, false);
+  inst(place(new THREE.CylinderGeometry(0.165, 0.15, 0.008, 28), 0, -0.006, 0), M.blush, mPlate, false);
   inst(new THREE.CylinderGeometry(0.128, 0.1, 0.014, 28), M.china, mPlate, false);
   // soft grounding shadow under each table
-  const aoMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x120608, transparent: true, opacity: 0.55, depthWrite: false }));
+  const aoMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x5a4636, transparent: true, opacity: 0.32, depthWrite: false }));
   inst(
     new THREE.CircleGeometry(2.15, 32),
     aoMat,
@@ -656,14 +623,14 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   inst(place(centerpieceGeo(), 0, TABLE_H + 0.012, 0), M.flowers, mTable);
   inst(new THREE.SphereGeometry(0.017, 8, 8), M.flame, mFlame, false, false);
   const glowTopMat = track(
-    new THREE.MeshBasicMaterial({ map: glow, color: "#ffb070", transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ map: glow, color: "#ffb070", transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false }),
   );
   inst(new THREE.CircleGeometry(0.95, 32), glowTopMat, mGlowTop, false, false);
 
   const haloGeo = track(new THREE.BufferGeometry());
   haloGeo.setAttribute("position", new THREE.Float32BufferAttribute(haloPos, 3));
   const haloMat = track(
-    new THREE.PointsMaterial({ map: glow, color: "#ffb060", size: 0.55, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false }),
+    new THREE.PointsMaterial({ map: glow, color: "#ffc890", size: 0.3, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }),
   );
   world.add(new THREE.Points(haloGeo, haloMat));
 
@@ -674,7 +641,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   dustGeo.setAttribute("position", new THREE.Float32BufferAttribute(dustPos, 3));
   const dust = new THREE.Points(
     dustGeo,
-    track(new THREE.PointsMaterial({ map: glow, color: "#ffe2b8", size: 0.09, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false })),
+    track(new THREE.PointsMaterial({ map: glow, color: "#ffffff", size: 0.07, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false })),
   );
   world.add(dust);
 
@@ -703,7 +670,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const mkRing = () => {
     const m = new THREE.Mesh(
       ringGeo,
-      new THREE.MeshBasicMaterial({ color: "#ffd9a0", transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }),
+      new THREE.MeshBasicMaterial({ color: "#8a2748", transparent: true, opacity: 0, depthWrite: false, toneMapped: false }),
     );
     m.rotation.x = -Math.PI / 2;
     m.visible = false;
@@ -717,7 +684,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     const ring = mkRing();
     const beam = new THREE.Mesh(
       beamGeo,
-      new THREE.MeshBasicMaterial({ map: beamMap, color: "#ffd9a0", transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }),
+      new THREE.MeshBasicMaterial({ map: beamMap, color: "#d8839a", transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }),
     );
     beam.visible = false;
     world.add(beam);
@@ -1230,8 +1197,8 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
 
     // candle flicker and dust drift
     const flick = 0.62 + Math.sin(simTime * 9) * 0.05 + Math.sin(simTime * 23.7) * 0.04;
-    haloMat.opacity = flick;
-    glowTopMat.opacity = 0.26 + (flick - 0.62) * 0.5;
+    haloMat.opacity = flick * 0.6;
+    glowTopMat.opacity = 0;
     dust.position.y = Math.sin(simTime * 0.25) * 0.25;
     dust.position.x = Math.sin(simTime * 0.11) * 0.5;
 
