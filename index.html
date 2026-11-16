@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
       body { margin: 0; background: #f6f0e7; font-family: Inter, system-ui, sans-serif; }
+      .pv-switch { display: flex; gap: 6px; justify-content: center; padding: 10px 16px; background: #efe6d9; }
+      .pv-switch button { padding: 8px 16px; border: 0; border-radius: 999px; font: 600 13px Inter, system-ui, sans-serif; color: #4a1730; background: transparent; cursor: pointer; }
+      .pv-switch button[aria-pressed="true"] { color: #fff8ee; background: #4a1730; }
+      .pv-switch button:focus-visible { outline: 2px solid #b8935a; outline-offset: 2px; }
     </style>
   </head>
   <body>

@@ -57,6 +57,7 @@ const FIRST = [
   "Nadia", "Will", "Lena", "Isaac", "Tessa", "Raj", "Emma", "Hugo", "Alice", "Jonah",
 ];
 const DIETS = ["Vegetarian", "Vegan", "Gluten-free", "Dairy-free"];
+const MODEL_TOKEN_COLORS = ["#6a1f3f", "#8a2748", "#7d2a4a", "#5a1b38", "#9a3556"];
 const TOKEN_COLORS = ["#6a1f3f", "#8a2748", "#d39a92", "#4a1730", "#a85a6c", "#c47e6c", "#7d2a4a"];
 
 const rand = (a = 1, b = 0) => b + Math.random() * (a - b);
@@ -194,7 +195,7 @@ function noiseTex() {
   return tex;
 }
 
-function screenTex() {
+function screenTex(model = false) {
   return canvasTex(1024, 536, (c) => {
     const g = c.createLinearGradient(0, 0, 1024, 536);
     g.addColorStop(0, "#5b1c3b");
@@ -206,14 +207,18 @@ function screenTex() {
     r.addColorStop(1, "rgba(255,200,170,0)");
     c.fillStyle = r;
     c.fillRect(0, 0, 1024, 536);
+    if (model) {
+      c.fillStyle = "#f1ebe1";
+      c.fillRect(0, 0, 1024, 536);
+    }
     c.textAlign = "center";
-    c.fillStyle = "#f6e9d6";
+    c.fillStyle = model ? "#5a1b38" : "#f6e9d6";
     c.font = "600 150px 'Cormorant Garamond', Georgia, serif";
     c.fillText("Seat Smart", 512, 290);
-    c.fillStyle = "#d9b98a";
+    c.fillStyle = model ? "#b99aa5" : "#d9b98a";
     c.fillRect(432, 336, 160, 3);
     c.font = "500 44px Georgia, serif";
-    c.fillStyle = "#e8cdb0";
+    c.fillStyle = model ? "#7b5b66" : "#e8cdb0";
     c.fillText("Please find your seat", 512, 412);
   });
 }
@@ -352,7 +357,11 @@ function curtainGeo(w: number, h: number, waves: number) {
 
 /* ---------- main ---------- */
 
-export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
+export type HeroVariant = "daylight" | "model";
+
+export function createSeatSmartHero(stage: HTMLElement, variant: HeroVariant = "daylight"): HeroHandle {
+  // "model" renders the room as a matte architectural model, with guests as the only color
+  const model = variant === "model";
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const disposables: { dispose(): void }[] = [];
   const track = <T extends { dispose(): void }>(x: T) => {
@@ -387,7 +396,8 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const target = new THREE.Vector3(0, 0.9, 0.2);
 
   /* ----- lights ----- */
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xd9cdbd, 0.95));
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xd9cdbd, 0.95);
+  scene.add(hemi);
   const key = new THREE.DirectionalLight(0xfff3e2, 2.3);
   key.position.set(7, 17, 10);
   key.castShadow = true;
@@ -406,6 +416,14 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const fill = new THREE.DirectionalLight(0xfff6ea, 0.9);
   fill.position.set(-10, 8, 6);
   scene.add(fill);
+  if (model) {
+    // stronger light and shade so the white forms read
+    hemi.intensity = 0.5;
+    key.intensity = 3.1;
+    fill.intensity = 0.35;
+    scene.environmentIntensity = 0.3;
+  }
+
   /* ----- materials ----- */
   const M = {
     floor: track(new THREE.MeshStandardMaterial({ map: track(parquetTex()), roughness: 0.55, metalness: 0 })),
@@ -451,6 +469,35 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     flame: track(new THREE.MeshBasicMaterial({ color: "#ffe0a8", toneMapped: false })),
   };
   M.floor.map!.repeat.set(5, 4);
+  if (model) {
+    const clay = (m: THREE.MeshStandardMaterial, hex: string) => {
+      m.map = null;
+      m.color.set(hex);
+      m.roughness = 1;
+      m.metalness = 0;
+      m.needsUpdate = true;
+    };
+    clay(M.floor, "#d9d0c1");
+    clay(M.stone, "#e6dfd3");
+    clay(M.cap, "#f7f3ec");
+    clay(M.dark, "#d8cfc1");
+    clay(M.wood, "#c9bdab");
+    clay(M.blush, "#e2d9cb");
+    clay(M.linen, "#fbf8f3");
+    clay(M.cushion, "#efe9df");
+    clay(M.china, "#ffffff");
+    clay(M.napkin, "#ddd3c4");
+    clay(M.velvet, "#f4efe7");
+    clay(M.slats, "#e4dccf");
+    clay(M.walnut, "#ddd4c6");
+    clay(M.plum, "#ddd3c4");
+    clay(M.flowers, "#e9e2d6");
+    M.flowers.vertexColors = false;
+    M.velvet.opacity = 1;
+    M.glass.opacity = 0.55;
+    M.glass.envMapIntensity = 0.6;
+    M.flame.color.set("#f4efe7");
+  }
 
   const world = new THREE.Group();
   scene.add(world);
@@ -497,25 +544,25 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   wallA.repeat.set(8, 1);
   const wallB = track(wallTex());
   wallB.repeat.set(6, 1);
-  add(new THREE.PlaneGeometry(W, H), track(new THREE.MeshStandardMaterial({ map: wallA, roughness: 0.8 })), 0, H / 2, -D / 2 + 0.005);
-  const leftWall = add(new THREE.PlaneGeometry(D, H), track(new THREE.MeshStandardMaterial({ map: wallB, roughness: 0.8 })), -W / 2 + 0.005, H / 2, 0);
+  add(new THREE.PlaneGeometry(W, H), track(new THREE.MeshStandardMaterial(model ? { color: "#f3eee6", roughness: 1 } : { map: wallA, roughness: 0.8 })), 0, H / 2, -D / 2 + 0.005);
+  const leftWall = add(new THREE.PlaneGeometry(D, H), track(new THREE.MeshStandardMaterial(model ? { color: "#f3eee6", roughness: 1 } : { map: wallB, roughness: 0.8 })), -W / 2 + 0.005, H / 2, 0);
   leftWall.rotation.y = Math.PI / 2;
 
   // soft shadow on the page under the plinth
-  const contactMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x4a3a30, transparent: true, opacity: 0.4, depthWrite: false }));
+  const contactMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x4a3a30, transparent: true, opacity: model ? 0.55 : 0.4, depthWrite: false }));
   const contact = add(new THREE.PlaneGeometry(W * 1.75, D * 1.85), contactMat, 0.4, -0.5, 0.6, false, false);
   contact.rotation.x = -Math.PI / 2;
   contact.renderOrder = -1;
 
   // daylight falling across the floor from each window
-  const sunMat = track(new THREE.MeshBasicMaterial({ map: upTex, color: "#fff6e4", transparent: true, opacity: 0.5, depthWrite: false }));
+  const sunMat = track(new THREE.MeshBasicMaterial({ map: upTex, color: "#fff6e4", transparent: true, opacity: model ? 0 : 0.5, depthWrite: false }));
   const sunPatch = (z: number) => {
     const m = add(new THREE.PlaneGeometry(2.2, 6.5), sunMat, -W / 2 + 3.25, 0.008, z + 0.7, false, false);
     m.rotation.set(-Math.PI / 2, 0, Math.PI / 2 + 0.2);
   };
 
   // windows and drapes on the left wall
-  const winMat = track(new THREE.MeshBasicMaterial({ map: track(windowTex()) }));
+  const winMat = track(model ? new THREE.MeshStandardMaterial({ color: "#e3dbce", roughness: 1 }) : new THREE.MeshBasicMaterial({ map: track(windowTex()) }));
   const drape = track(curtainGeo(0.6, 3.7, 3));
   for (const z of [-4.9, 0, 4.9]) {
     const frame = add(new THREE.BoxGeometry(0.08, 3.36, 2.46), M.dark, -W / 2 + 0.04, 2.1, z);
@@ -539,7 +586,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const backdrop = add(curtainGeo(9, 3.8, 40), M.slats, 0, 2.3, -D / 2 + 0.1);
   backdrop.castShadow = false;
   add(new THREE.BoxGeometry(4.48, 2.38, 0.06), M.dark, 0, 2.4, -D / 2 + 0.26);
-  add(new THREE.PlaneGeometry(4.4, 2.3), track(new THREE.MeshBasicMaterial({ map: track(screenTex()), toneMapped: false })), 0, 2.4, -D / 2 + 0.3, false, false);
+  add(new THREE.PlaneGeometry(4.4, 2.3), track(new THREE.MeshBasicMaterial({ map: track(screenTex(model)), toneMapped: false })), 0, 2.4, -D / 2 + 0.3, false, false);
 
   /* ----- tables, chairs and place settings ----- */
   const seats: Seat[] = [];
@@ -607,7 +654,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   inst(place(new THREE.CylinderGeometry(0.165, 0.15, 0.008, 28), 0, -0.006, 0), M.blush, mPlate, false);
   inst(new THREE.CylinderGeometry(0.128, 0.1, 0.014, 28), M.china, mPlate, false);
   // soft grounding shadow under each table
-  const aoMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x5a4636, transparent: true, opacity: 0.32, depthWrite: false }));
+  const aoMat = track(new THREE.MeshBasicMaterial({ map: glow, color: 0x5a4636, transparent: true, opacity: model ? 0.5 : 0.32, depthWrite: false }));
   inst(
     new THREE.CircleGeometry(2.15, 32),
     aoMat,
@@ -632,7 +679,9 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const haloMat = track(
     new THREE.PointsMaterial({ map: glow, color: "#ffc890", size: 0.3, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }),
   );
-  world.add(new THREE.Points(haloGeo, haloMat));
+  const halos = new THREE.Points(haloGeo, haloMat);
+  halos.visible = !model;
+  world.add(halos);
 
   // dust motes
   const dustPos: number[] = [];
@@ -643,6 +692,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     dustGeo,
     track(new THREE.PointsMaterial({ map: glow, color: "#ffffff", size: 0.07, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false })),
   );
+  dust.visible = !model;
   world.add(dust);
 
   /* ----- guest tokens ----- */
@@ -854,7 +904,8 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     if (seat.guest) return;
     seat.guest = guest;
     seated++;
-    col.set(guest.you ? "#f0c36a" : guest.tagKind === "vip" ? "#c8a468" : pick(TOKEN_COLORS));
+    if (model) col.set(guest.you ? "#e07a5c" : guest.tagKind === "vip" ? "#3d1226" : pick(MODEL_TOKEN_COLORS));
+    else col.set(guest.you ? "#f0c36a" : guest.tagKind === "vip" ? "#c8a468" : pick(TOKEN_COLORS));
     tokens.setColorAt(seat.id, col);
     tokens.instanceColor!.needsUpdate = true;
     if (o.instant) setToken(seat, 0, 1);

@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
-import { createSeatSmartHero } from "./seat-smart-hero/scene";
+import { createSeatSmartHero, type HeroVariant } from "./seat-smart-hero/scene";
 import "./seat-smart-hero/seat-smart-hero.css";
 
 interface SeatSmartHeroProps {
   primaryHref?: string;
   secondaryHref?: string;
+  /** "daylight" is a bright realistic venue; "model" is a matte architectural model. */
+  variant?: HeroVariant;
 }
 
 /**
@@ -15,14 +17,15 @@ interface SeatSmartHeroProps {
 export default function SeatSmartHero({
   primaryHref = "/signup",
   secondaryHref = "#how-it-works",
+  variant = "daylight",
 }: SeatSmartHeroProps) {
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!stageRef.current) return;
-    const hero = createSeatSmartHero(stageRef.current);
+    const hero = createSeatSmartHero(stageRef.current, variant);
     return () => hero.destroy();
-  }, []);
+  }, [variant]);
 
   return (
     <section className="ssh-hero" aria-label="Seat Smart">
