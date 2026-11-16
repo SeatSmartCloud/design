@@ -44,7 +44,6 @@ const TOTAL = TABLES * SEATS;
 const TABLE_R = 0.9;
 const TABLE_H = 0.75;
 const CHAIR_R = 1.42;
-const TOKEN_S = 1.35;
 const SEAT_Y = 0.51;
 const VIP_TABLE = 2; // front and center, by the stage
 const PREFILL = 36;
@@ -77,15 +76,6 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   if (text !== undefined) node.textContent = text;
   if (parent) parent.appendChild(node);
   return node;
-}
-
-function bounce(x: number) {
-  const n = 7.5625;
-  const d = 2.75;
-  if (x < 1 / d) return n * x * x;
-  if (x < 2 / d) return n * (x -= 1.5 / d) * x + 0.75;
-  if (x < 2.5 / d) return n * (x -= 2.25 / d) * x + 0.9375;
-  return n * (x -= 2.625 / d) * x + 0.984375;
 }
 
 /* ---------- procedural textures ---------- */
@@ -305,14 +295,11 @@ function clothGeo() {
   return geo;
 }
 
+// A claimed seat: an upholstered cover that sits over the bare chair, in chair-local space.
 function tokenGeo() {
-  const profile = [
-    [0, 0], [0.13, 0], [0.138, 0.025], [0.115, 0.055], [0.066, 0.11], [0.048, 0.26],
-    [0.078, 0.33], [0.09, 0.35], [0.06, 0.375], [0.04, 0.39], [0, 0.4],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  const body = new THREE.LatheGeometry(profile, 28);
-  const head = place(new THREE.SphereGeometry(0.098, 24, 16), 0, 0.47, 0);
-  return mergeGeometries([body, head])!;
+  const pad = place(new THREE.BoxGeometry(0.47, 0.1, 0.47), 0, 0.485, 0.005);
+  const back = place(new THREE.BoxGeometry(0.47, 0.6, 0.075), 0, 0.74, -0.19);
+  return mergeGeometries([pad, back])!;
 }
 
 function centerpieceGeo() {
@@ -465,7 +452,7 @@ export function createSeatSmartHero(stage: HTMLElement, variant: HeroVariant = "
     ),
     slats: track(new THREE.MeshStandardMaterial({ color: "#c9a57c", roughness: 0.65, side: THREE.DoubleSide })),
     walnut: track(new THREE.MeshStandardMaterial({ color: "#c7a27a", roughness: 0.55 })),
-    token: track(new THREE.MeshPhysicalMaterial({ color: "#ffffff", roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.2 })),
+    token: track(new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.8 })),
     flame: track(new THREE.MeshBasicMaterial({ color: "#ffe0a8", toneMapped: false })),
   };
   M.floor.map!.repeat.set(5, 4);
@@ -703,9 +690,9 @@ export function createSeatSmartHero(stage: HTMLElement, variant: HeroVariant = "
   world.add(tokens);
   const col = new THREE.Color();
   const setToken = (seat: Seat, yOff: number, s: number) => {
-    dummy.position.set(seat.pos.x, SEAT_Y + yOff, seat.pos.z);
-    dummy.rotation.set(0, 0, 0);
-    dummy.scale.setScalar(Math.max(s, 0.0001) * TOKEN_S);
+    dummy.position.set(seat.pos.x, yOff, seat.pos.z);
+    dummy.rotation.set(0, seat.angle + Math.PI, 0);
+    dummy.scale.setScalar(Math.max(s, 0.0001));
     dummy.updateMatrix();
     tokens.setMatrixAt(seat.id, dummy.matrix);
     tokens.instanceMatrix.needsUpdate = true;
@@ -910,7 +897,7 @@ export function createSeatSmartHero(stage: HTMLElement, variant: HeroVariant = "
     tokens.instanceColor!.needsUpdate = true;
     if (o.instant) setToken(seat, 0, 1);
     else {
-      anims.push({ seat, t0: simTime, dur: 0.8, type: "drop" });
+      anims.push({ seat, t0: simTime, dur: 0.55, type: "drop" });
       pulse(seat);
     }
     if (o.label) showLabel(seat, o.label);
@@ -1211,8 +1198,11 @@ export function createSeatSmartHero(stage: HTMLElement, variant: HeroVariant = "
     for (let i = anims.length - 1; i >= 0; i--) {
       const a = anims[i];
       const p = Math.min(1, (simTime - a.t0) / a.dur);
-      if (a.type === "drop") setToken(a.seat, (1 - bounce(p)) * 2.6, Math.min(1, 0.5 + p * 2));
-      else setToken(a.seat, p * p * 1.2, a.seat.guest ? 1 : 1 - p);
+      if (a.type === "drop") {
+        // settle onto the chair with a slight overshoot
+        const q = p - 1;
+        setToken(a.seat, q * q * 0.35, 1 + 2.7 * q * q * q + 1.7 * q * q);
+      } else setToken(a.seat, p * p * 0.4, a.seat.guest ? 1 : 1 - p);
       if (p >= 1) anims.splice(i, 1);
     }
 
