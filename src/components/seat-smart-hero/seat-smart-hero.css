@@ -391,65 +391,103 @@
 .ssh-ph-table {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
-  margin: 0.6em 0 0.5em;
-  transition: opacity 0.35s ease;
+  aspect-ratio: 1 / 1.16;
+  margin: 0.6em 0 0.55em;
+  border-radius: 1.1em;
+  background: linear-gradient(160deg, #f8f1ec 0%, #f3e6de 55%, #efdccd 100%);
+  box-shadow: inset 0 0 0 1px rgba(160, 110, 95, 0.25);
+}
+.ssh-ph-front {
+  position: absolute;
+  left: 50%;
+  top: 5%;
+  padding: 0.35em 0.9em;
+  border-radius: 99px;
+  font-size: 0.52em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  background: #4d4a4b;
+  transform: translateX(-50%);
 }
 .ssh-ph-round {
   position: absolute;
-  inset: 21%;
+  left: 50%;
+  top: 57%;
+  width: 42%;
+  aspect-ratio: 1;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 0.9em;
+  font-family: var(--ssh-serif, "Cormorant Garamond", "Playfair Display", Georgia, serif);
+  font-size: 1.05em;
   font-weight: 600;
-  color: var(--ssh-plum);
-  background: #fffdf8;
-  box-shadow: 0 0.4em 1em -0.4em rgba(43, 15, 28, 0.4), inset 0 0 0 1px rgba(74, 23, 48, 0.12);
+  color: #5a5556;
+  background: #fffdfb;
+  box-shadow: 0 0.5em 1.2em -0.5em rgba(120, 70, 50, 0.45), inset 0 0 0 1px rgba(160, 110, 95, 0.2);
+  transform: translate(-50%, -50%);
 }
 .ssh-ph-seat {
   position: absolute;
-  width: 15%;
+  width: 15.5%;
   aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(74, 23, 48, 0.4);
+  display: grid;
+  place-items: center;
+  border-radius: 30%;
+  font-size: 0.68em;
+  font-weight: 700;
+  color: #5a1232;
+  background: #e9ddd5;
+  box-shadow: inset 0 0 0 1px rgba(160, 110, 95, 0.22);
   transform: translate(-50%, -50%);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 .ssh-ph-seat.ssh-taken {
-  border: 1.5px solid transparent;
-  background: #cdb7bd;
+  color: #fff;
+  background: #9b9797;
+}
+.ssh-ph-seat.ssh-selected {
+  color: #fff;
+  background: #6f1039;
+  transform: translate(-50%, -50%) scale(1.12);
 }
 .ssh-ph-seat.ssh-mine {
-  border: 1.5px solid transparent;
-  background: var(--ssh-burgundy);
-  box-shadow: 0 0 0 0.3em rgba(184, 147, 90, 0.45);
+  color: #fff;
+  background: #e07a5c;
   transform: translate(-50%, -50%) scale(1.12);
 }
 .ssh-ph-legend {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45em;
-  font-size: 0.74em;
-  color: #7b5b66;
+  gap: 0.35em;
+  font-size: 0.62em;
+  color: #7b6a6c;
 }
 .ssh-ph-legend i {
   width: 0.95em;
   height: 0.95em;
   border-radius: 50%;
+  background: #e9ddd5;
+  box-shadow: inset 0 0 0 1px rgba(160, 110, 95, 0.3);
 }
-.ssh-ph-legend i.ssh-free {
-  border: 1.5px dashed rgba(74, 23, 48, 0.4);
+.ssh-ph-legend i.ssh-mine {
+  background: #e07a5c;
+  box-shadow: none;
 }
 .ssh-ph-legend i.ssh-taken {
-  margin-left: 0.7em;
-  background: #cdb7bd;
+  background: #9b9797;
+  box-shadow: none;
+}
+.ssh-ph-legend span + i {
+  margin-left: 0.5em;
 }
 .ssh-ph-finger {
   position: absolute;
   left: 50%;
-  top: 112%;
+  top: 108%;
   width: 20%;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -469,7 +507,7 @@
   position: absolute;
   left: 0.8em;
   right: 0.8em;
-  top: 37%;
+  top: 44%;
   padding: 0.6em 0.7em;
   border-radius: 0.8em;
   font-size: 0.82em;

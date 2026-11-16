@@ -224,7 +224,7 @@ function screenTex() {
     c.textAlign = "center";
     c.fillStyle = "#f6e9d6";
     c.font = "600 150px 'Cormorant Garamond', Georgia, serif";
-    c.fillText("Welcome", 512, 290);
+    c.fillText("Seat Smart", 512, 290);
     c.fillStyle = "#d9b98a";
     c.fillRect(432, 336, 160, 3);
     c.font = "500 44px Georgia, serif";
@@ -466,11 +466,11 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     flowers: track(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7 })),
     velvet: track(
       new THREE.MeshPhysicalMaterial({
-        color: "#6d1a36",
-        roughness: 0.85,
-        sheen: 1,
-        sheenRoughness: 0.4,
-        sheenColor: new THREE.Color("#d86a8c"),
+        color: "#3a0d1f",
+        roughness: 0.9,
+        sheen: 0.6,
+        sheenRoughness: 0.5,
+        sheenColor: new THREE.Color("#7a2f48"),
         side: THREE.DoubleSide,
       }),
     ),
@@ -739,7 +739,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   overlay.appendChild(svg);
 
   const labels = Array.from({ length: 4 }, () => ({ node: el("div", "ssh-label", undefined, overlay), seat: null as Seat | null, until: 0 }));
-  const pin = el("div", "ssh-label ssh-pin ssh-on", undefined, overlay);
+  const pin = el("div", "ssh-label ssh-pin", undefined, overlay);
   el("b", undefined, `Table ${VIP_TABLE + 1}`, pin);
   el("span", undefined, small ? "Locked by host" : "VIP seats locked by host", pin);
 
@@ -765,20 +765,21 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const phHi = el("div", "ssh-ph-hi", "Pick your seat", phScreen);
   const phSub = el("div", "ssh-ph-sub", "Tap any free seat", phScreen);
   const phTable = el("div", "ssh-ph-table", undefined, phScreen);
+  el("div", "ssh-ph-front", "Front of room", phTable);
   const phRound = el("div", "ssh-ph-round", "Table 1", phTable);
   const phSeats = Array.from({ length: SEATS }, (_, i) => {
-    const a = (i / SEATS) * Math.PI * 2 + Math.PI / SEATS;
-    const dot = el("div", "ssh-ph-seat", undefined, phTable);
-    dot.style.left = `${50 + Math.sin(a) * 41}%`;
-    dot.style.top = `${50 + Math.cos(a) * 41}%`;
+    const a = (i / SEATS) * Math.PI * 2;
+    const dot = el("div", "ssh-ph-seat", String(i + 1), phTable);
+    dot.style.left = `${50 + Math.sin(a) * 38}%`;
+    dot.style.top = `${57 - Math.cos(a) * 32}%`;
     return dot;
   });
   const phFinger = el("div", "ssh-ph-finger", undefined, phTable);
   const phLegend = el("div", "ssh-ph-legend", undefined, phScreen);
-  el("i", "ssh-free", undefined, phLegend);
-  el("span", undefined, "Free", phLegend);
-  el("i", "ssh-taken", undefined, phLegend);
-  el("span", undefined, "Taken", phLegend);
+  for (const [cls, text] of [["ssh-free", "Available"], ["ssh-mine", "Your seat"], ["ssh-taken", "Taken"]]) {
+    el("i", cls, undefined, phLegend);
+    el("span", undefined, text, phLegend);
+  }
   const phToast = el("div", "ssh-ph-toast", "Just taken. Pick another.", phScreen);
   const phCta = el("div", "ssh-ph-cta", "Choose a seat", phScreen);
   const phNote = el("div", "ssh-ph-note", "", phScreen);
@@ -792,6 +793,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const after = (dt: number, fn: () => void) => timers.push({ t: simTime + dt, fn });
   let phoneTable = -1;
   let phoneMine = -1;
+  let phoneSaved = false;
   let hoverTable = -1;
   let hoverSeat: Seat | null = null;
   let dirty = true;
@@ -816,7 +818,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const phoneRefresh = () => {
     if (phoneTable < 0) return;
     tableSeats(phoneTable).forEach((s, i) => {
-      phSeats[i].className = "ssh-ph-seat" + (i === phoneMine ? " ssh-mine" : s.guest ? " ssh-taken" : "");
+      phSeats[i].className = "ssh-ph-seat" + (i === phoneMine ? (phoneSaved ? " ssh-mine" : " ssh-selected") : s.guest ? " ssh-taken" : "");
     });
   };
 
@@ -916,11 +918,18 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     if (seat.table === hoverTable) renderTip();
   };
 
+  // a brief note that the host has locked the VIP table, once per loop
+  const flashPin = () => {
+    pin.classList.add("ssh-on");
+    after(3.5, () => pin.classList.remove("ssh-on"));
+  };
+
   function beginReset() {
     phase = "reset";
     const open = seats.filter((s) => !s.locked).sort(() => Math.random() - 0.5);
     open.slice(PREFILL).forEach((s) => after(rand(2.4), () => release(s)));
     after(3.6, () => (phase = "fill"));
+    after(12, flashPin);
   }
 
   function ambient() {
@@ -944,7 +953,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
     phoneMine = -1;
     phFinger.classList.remove("ssh-on");
     phFinger.style.left = "50%";
-    phFinger.style.top = "112%";
+    phFinger.style.top = "108%";
     phCta.classList.remove("ssh-done");
     phCta.textContent = "Choose a seat";
     phNote.textContent = "";
@@ -980,7 +989,12 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
       phFinger.classList.add("ssh-tap");
       later(450, () => phFinger.classList.remove("ssh-tap"));
       phoneMine = seat.idx;
+      phoneSaved = false;
       claim(seat, guest, { label: 3, thread: true });
+      after(0.8, () => {
+        phoneSaved = true;
+        phoneRefresh();
+      });
       phFinger.classList.remove("ssh-on");
       phCta.classList.add("ssh-done");
       phCta.textContent = "Seat saved";
@@ -1030,6 +1044,7 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   if (!reduced) {
     after(0.6, ambient);
     after(1.6, phoneTurn);
+    after(9, flashPin);
   }
 
   /* ----- camera ----- */
