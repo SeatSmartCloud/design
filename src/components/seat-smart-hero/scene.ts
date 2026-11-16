@@ -754,9 +754,9 @@ export function createSeatSmartHero(stage: HTMLElement): HeroHandle {
   const countRest = el("span", undefined, ` of ${TOTAL} seated`, countRow);
   const barFill = el("i", undefined, undefined, el("div", "ssh-bar", undefined, counter));
 
-  if (!reduced) {
-    const canHover = window.matchMedia("(hover: hover)").matches;
-    el("div", "ssh-hint", canHover ? "Hover a table. Click a free seat to claim it." : "Tap a free seat to claim it.", overlay);
+  // only shown where a mouse makes it practical; seats are too small to tap on a phone
+  if (!reduced && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    el("div", "ssh-hint", "Hover a table. Click a free seat to claim it.", overlay);
   }
 
   const phone = el("div", "ssh-phone", undefined, overlay);
